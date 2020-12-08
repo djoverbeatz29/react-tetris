@@ -7,25 +7,33 @@ class Tetris extends React.Component {
         super();
         this.state = {
             board: [...Array(21).keys()].map(i=>[...Array(10).keys()].map(j=>0)),
-            current: {},
+            current: {
+                piece: new Piece(),
+                location: [0,3]
+            },
             gameOn: true,
             score: 0,
             level: 1,
             rowsCompleted: 0
         }
+        this.handleKeyPress = this.handleKeyPress.bind(this);
+
+    }
+
+    componentDidMount() {
         this.getPiece();
     }
 
     placePiece(coords=this.state.current.location) {
         const board = this.state.board;
-        const [currX, currY] = this.state.current.location;
         const [x, y] = coords;
-        const n = this.state.current.len;
-        const shape = this.state.current.piece.shape;
+        const [currX, currY] = this.state.current.location;
+        const shape = this.state.current.piece.state.shape;
+        const n = shape.length;
         const boardCopy = JSON.parse(JSON.stringify(board));
         for (let i=0; i<n; i++) {
             for (let j=0; j<n; j++) {
-                if (shape[i][j]) boardCopy[currX+i][currY+j]=0;
+                if (shape[i][j]>0) boardCopy[currX+i][currY+j]=0;
             }
         }
         for (let i=0; i<n; i++) {
@@ -42,7 +50,7 @@ class Tetris extends React.Component {
                     location: [x,y]
                 }
             }
-        })                
+        })            
     }
 
     getPiece() {
@@ -56,11 +64,9 @@ class Tetris extends React.Component {
                     piece: piece,
                     location: [4-n, 3],
                     code: code,
-                    len: n
                 }
             }
         })
-        console.log(this.state);
         this.placePiece();
     }
 
@@ -105,16 +111,26 @@ class Tetris extends React.Component {
     }
 
     rotate() {
-        const {len, piece, location} = this.state.current;
+        const {piece, location} = this.state.current;
         const board = this.state.board;
         const [x, y] = location;
-        for (let i=0; i<len; i++) {
-            for (let j=0; j<len; j++) {
+        const n = piece.shape.length;
+        for (let i=0; i<n; i++) {
+            for (let j=0; j<n; j++) {
                 if (piece.shape[i][j]) board[x+i][y+j]=0;
             }
         }
         piece.rotate();
         this.placePiece();
+    }
+
+    handleKeyPress(e) {
+        console.log(e);
+        const key = e.keyCode;
+        if (key===37) this.moveLeft();
+        else if (key===38) this.rotate();
+        else if (key===39) this.moveRight();
+        else if (key===40) this.moveDown();
     }
 
     checkBoard() {
@@ -141,7 +157,7 @@ class Tetris extends React.Component {
                     })
                 }
             })
-            this.setState({ board: boardCopy});
+            this.setState({ board: boardCopy });
             this.getPiece();
         }
     }
@@ -149,7 +165,7 @@ class Tetris extends React.Component {
     render() {
         const { board, score, level, rowsCompleted } = this.state;
         return (
-            <div style={{ }}>
+            <div onKeyPress={(e) => this.handleKeyPress(e)} style={{ }}>
                 <h2>SCORE: {score}</h2>
                 <h2>LEVEL: {level}</h2>
                 <h2>ROWS COMPLETED: {rowsCompleted}</h2>
