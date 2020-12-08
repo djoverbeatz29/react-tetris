@@ -2,9 +2,9 @@ import { pieces } from './pieces';
 import React from 'react';
 
 class Piece extends React.Component {
-    constructor(props) {
-        super(props);
-        const piece = pieces[parseInt(props.index)];
+    constructor() {
+        super();
+        const piece = pieces[Math.floor(7 * Math.random())];
         this.state = {
             shape: piece.shape,
             code: piece.code
@@ -88,7 +88,3 @@ class Piece extends React.Component {
 }
 
 export default Piece;
-
-Piece.defaultProps = {
-    index: Math.floor(7 * Math.random())
-}
