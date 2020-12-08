@@ -1,4 +1,4 @@
-import { pieces } from './pieces';
+import { pieces, colorMap } from './pieces';
 import React from 'react';
 
 class Piece extends React.Component {
@@ -12,25 +12,24 @@ class Piece extends React.Component {
     }
 
     rotate() {
-        const copy = JSON.parse(JSON.stringify(this.shape));
-        const shape = this.shape;
+        const copy = JSON.parse(JSON.stringify(this.state.shape));
+        const shape = this.state.shape;
         const n = shape.length;
         for (let i=0;i<n;i++) {
             for (let j=0;j<n;j++) {
-                copy.shape[i][n-1-j] = shape[j][i];
+                copy[i][n-1-j] = shape[j][i];
             }
         }
         this.setState({
-            piece: copy.piece,
-            shape: copy.shape
+            shape: copy
         })
     }
 
     leftmost() {
-        const n = this.piece.length;
+        const n = this.state.shape.length;
         return [...Array(n).keys()].map(i=> {
             for (let j=0;j<n;j++) {
-                if (this.piece[i][j]) {
+                if (this.state.shape[i][j]) {
                     return j;
                 }
             }
@@ -39,10 +38,10 @@ class Piece extends React.Component {
     }
 
     rightmost() {
-        const n = this.piece.length;
+        const n = this.state.shape.length;
         return [...Array(n).keys()].map(i=> {
             for (let j=n-1;j>=0;j--) {
-                if (this.piece[i][j]) {
+                if (this.state.shape[i][j]) {
                     return j;
                 }
             }
@@ -51,10 +50,10 @@ class Piece extends React.Component {
     }
 
     bottommost() {
-        const n = this.piece.length;
+        const n = this.state.shape.length;
         return [...Array(n).keys()].map(i=> {
             for (let j=n-1;j>=0;j--) {
-                if (this.piece[j][i]) {
+                if (this.state.shape[j][i]) {
                     return j;
                 }
             }
@@ -63,7 +62,7 @@ class Piece extends React.Component {
     }
 
     render() {
-        const {shape, color} = this.state;
+        const {shape, code} = this.state;
         return (shape ?
             <table>
                 <tbody>
@@ -73,7 +72,7 @@ class Piece extends React.Component {
                             <td style={{
                                 width: "50px",
                                 height: "50px",
-                                backgroundColor: col? color: 'none'
+                                backgroundColor: col? colorMap[code]: 'none'
                                 }}
                                 key={i}></td>)
                         }

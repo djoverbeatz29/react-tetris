@@ -1,6 +1,7 @@
 import React from 'react';
 import Piece from './Piece';
 import { colorMap } from './pieces';
+import cloneDeep from 'lodash/cloneDeep';
 
 class Tetris extends React.Component {
     constructor() {
@@ -16,8 +17,8 @@ class Tetris extends React.Component {
             level: 1,
             rowsCompleted: 0
         }
-        this.handleKeyPress = this.handleKeyPress.bind(this);
-
+        this.handleKeyUp = this.handleKeyUp.bind(this);
+        this.handleKeyDown = this.handleKeyDown.bind(this);
     }
 
     componentDidMount() {
@@ -30,7 +31,7 @@ class Tetris extends React.Component {
         const [currX, currY] = this.state.current.location;
         const shape = this.state.current.piece.state.shape;
         const n = shape.length;
-        const boardCopy = JSON.parse(JSON.stringify(board));
+        const boardCopy = cloneDeep(board);
         for (let i=0; i<n; i++) {
             for (let j=0; j<n; j++) {
                 if (shape[i][j]>0) boardCopy[currX+i][currY+j]=0;
@@ -38,7 +39,7 @@ class Tetris extends React.Component {
         }
         for (let i=0; i<n; i++) {
             for (let j=0; j<n; j++) {
-                if (boardCopy[x+i]!==undefined && boardCopy[x+i][y+j]!==undefined && boardCopy[x+i][y+j]===0) boardCopy[x+i][y+j] = shape[i][j];
+                if (x+i<=20 && y+j>=0 && y+j<=9 && boardCopy[x+i][y+j]===0) boardCopy[x+i][y+j] = shape[i][j];
             }
         }
         this.setState(prevState=>{
@@ -106,7 +107,7 @@ class Tetris extends React.Component {
     }
 
     moveRight() {
-        const {location} = this.state.location;
+        const {location} = this.state.current;
         if (this.canMoveRight()) this.placePiece([location[0], location[1]+1]);
     }
 
@@ -114,23 +115,23 @@ class Tetris extends React.Component {
         const {piece, location} = this.state.current;
         const board = this.state.board;
         const [x, y] = location;
-        const n = piece.shape.length;
+        const shape = piece.state.shape;
+        const n = shape.length;
         for (let i=0; i<n; i++) {
             for (let j=0; j<n; j++) {
-                if (piece.shape[i][j]) board[x+i][y+j]=0;
+                if (shape[i][j]) board[x+i][y+j]=0;
             }
         }
         piece.rotate();
         this.placePiece();
     }
 
-    handleKeyPress(e) {
-        console.log(e.key);
-        const key = e.keyCode;
-        if (key===37) this.moveLeft();
-        else if (key===38) this.rotate();
-        else if (key===39) this.moveRight();
-        else if (key===40) this.moveDown();
+    handleKeyDown() {
+        this.moveDown();
+    }
+
+    handleKeyUp() {
+        this.rotate();
     }
 
     checkBoard() {
@@ -138,7 +139,7 @@ class Tetris extends React.Component {
         const {location} = this.state.current;
         if (location[0] < 3 && !this.canMoveDown()) this.setState({gameOn: false});
         else {
-            const boardCopy = JSON.parse(JSON.stringify(board));
+            const boardCopy = cloneDeep(board);
             const completedRows = [...Array(board.length).keys()].filter(i=>board[i].find(col=>!col)===undefined);
             completedRows.forEach(i=>{
                 boardCopy.splice(i,1);
@@ -165,7 +166,11 @@ class Tetris extends React.Component {
     render() {
         const { board, score, level, rowsCompleted } = this.state;
         return (
-            <div onKeyPress={this.handleKeyPress} tabIndex={0}>
+            <div
+                onKeyDown={this.handleKeyDown}
+                onKeyUp={this.handleKeyUp}
+                tabIndex={0}
+            >
                 <h2>SCORE: {score}</h2>
                 <h2>LEVEL: {level}</h2>
                 <h2>ROWS COMPLETED: {rowsCompleted}</h2>
