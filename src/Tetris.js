@@ -125,7 +125,7 @@ class Tetris extends React.Component {
     }
 
     handleKeyPress(e) {
-        console.log(e);
+        console.log(e.key);
         const key = e.keyCode;
         if (key===37) this.moveLeft();
         else if (key===38) this.rotate();
@@ -165,7 +165,7 @@ class Tetris extends React.Component {
     render() {
         const { board, score, level, rowsCompleted } = this.state;
         return (
-            <div onKeyPress={(e) => this.handleKeyPress(e)} style={{ }}>
+            <div onKeyPress={this.handleKeyPress} tabIndex={0}>
                 <h2>SCORE: {score}</h2>
                 <h2>LEVEL: {level}</h2>
                 <h2>ROWS COMPLETED: {rowsCompleted}</h2>
