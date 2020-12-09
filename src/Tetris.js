@@ -21,6 +21,9 @@ class Tetris extends React.Component {
         this.handleKeyDown = this.handleKeyDown.bind(this);
     }
 
+    handleKeyPress(e) {
+    }
+
     componentDidMount() {
         this.getPiece();
     }
@@ -126,16 +129,16 @@ class Tetris extends React.Component {
         this.placePiece();
     }
 
-    handleKeyDown() {
+    handleKeyDown(e) {
         this.moveDown();
     }
 
-    handleKeyUp() {
+    handleKeyUp(e) {
         this.rotate();
     }
 
     checkBoard() {
-        const {board} = this.state.board;
+        const board = this.state.board;
         const {location} = this.state.current;
         if (location[0] < 3 && !this.canMoveDown()) this.setState({gameOn: false});
         else {
