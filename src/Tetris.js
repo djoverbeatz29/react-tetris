@@ -17,11 +17,7 @@ class Tetris extends React.Component {
             level: 1,
             rowsCompleted: 0
         }
-        this.handleKeyUp = this.handleKeyUp.bind(this);
         this.handleKeyDown = this.handleKeyDown.bind(this);
-    }
-
-    handleKeyPress(e) {
     }
 
     componentDidMount() {
@@ -130,11 +126,11 @@ class Tetris extends React.Component {
     }
 
     handleKeyDown(e) {
-        this.moveDown();
-    }
-
-    handleKeyUp(e) {
-        this.rotate();
+        let key = e.key;
+        if (key==='ArrowUp') this.rotate();
+        else if (key==='ArrowDown') this.moveDown();
+        else if (key==='ArrowLeft') this.moveLeft();
+        else if (key==='ArrowRight') this.moveRight();
     }
 
     checkBoard() {
@@ -171,7 +167,6 @@ class Tetris extends React.Component {
         return (
             <div
                 onKeyDown={this.handleKeyDown}
-                onKeyUp={this.handleKeyUp}
                 tabIndex={0}
             >
                 <h2>SCORE: {score}</h2>
